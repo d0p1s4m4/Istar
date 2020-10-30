@@ -1,5 +1,7 @@
 bits 32
-org 0x1000
+
+global _start
+_start:
 
 mov byte [0xB8100], 'H'
 mov byte [0xB8102], 'e'
