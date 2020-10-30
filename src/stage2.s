@@ -1,27 +1,17 @@
-bits 16
-org 0x0
+bits 32
+org 0x1000
 
+mov byte [0xB8100], 'H'
+mov byte [0xB8102], 'e'
+mov byte [0xB8104], 'l'
+mov byte [0xB8106], 'l'
+mov byte [0xB8108], 'o'
+mov byte [0xB810A], ' '
+mov byte [0xB810C], '3'
+mov byte [0xB810E], '2'
+mov byte [0xB8110], 'b'
+mov byte [0xB8112], 'i'
+mov byte [0xB8114], 't'
+mov byte [0xB8116], '!'
 
-jmp start
-
-msg_hello db "Stage 2: Hello World!", 0x0D, 0x0A, 0
-
-bios_print:
-	lodsb
-	or al, al
-	jz .end
-	mov ah, 0x0E
-	int 0x10
-	jmp bios_print
-	.end:
-		ret
-
-start:
-	mov ax, 0x100
-	mov ds, ax
-	mov es, ax
-
-	mov si, msg_hello
-	call bios_print
-
-	jmp $
+jmp $

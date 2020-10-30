@@ -1,15 +1,26 @@
 org 0x07C00
 bits 16
 
-%define SECOND_STAGE_ADDR	0x100
-
 jmp start
 
 ;; ============================================================================
 ;; Data
 ;; ============================================================================
-msg_hello db "Istar: Hello World!", 0x0D, 0x0A, 0
-msg_error_stage2 db "Error: can't load stage 2", 0x0D, 0x0A, 0
+msg_hello: db "Istar: Hello World!", 0x0D, 0x0A, 0
+msg_error_stage2: db "Error: can't load stage 2", 0x0D, 0x0A, 0
+
+;; ----------------------------------------------------------------------------
+;;  gdt 
+;; ----------------------------------------------------------------------------
+gdt: 
+	db 0, 0, 0, 0, 0, 0, 0, 0
+	db 0xFF, 0xFF, 0x0, 0x0, 0x0, 10011011b, 11011111b, 0x0
+	db 0xFF, 0xFF, 0x0, 0x0, 0x0, 10010011b, 11011111b, 0x0
+	.end:
+
+gdt_ptr:
+	dw gdt.end - gdt - 1
+	dd gdt
 
 ;; ============================================================================
 ;; Function
@@ -32,6 +43,8 @@ bios_print:
 ;; ----------------------------------------------------------------------------
 
 start:
+	cli
+
 	; setup segments to zero
 	xor ax, ax
 	mov ds, ax
@@ -46,7 +59,7 @@ start:
 	call bios_print
 
 	; read disk
-	mov ax, SECOND_STAGE_ADDR
+	mov ax, 0x100
 	mov es, ax
 	xor bx, bx
 	xor ch, ch
@@ -56,10 +69,24 @@ start:
 	int 0x13
 	jc .err_load_stage2
 
-	jmp dword SECOND_STAGE_ADDR:0
+	lgdt [gdt_ptr]
+
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
+
+	jmp .next
+	.next:
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+
+	jmp 0x08:1000
 
 	.end:
-		cli
 		hlt
 		jmp $
 
