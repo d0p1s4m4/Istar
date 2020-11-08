@@ -10,7 +10,18 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install build-essential nasm
+        sudo apt-get install build-essential nasm flex bison
+        sudo apt-get install wget
+        sudo apt-get install libmpc-dev libgmp-dev libmpfr-dev
+
+    - uses: actions/cache@v1
+      id: cache
+      with:
+        path: toolchain
+        key: toolchain
+
+    - name: Build toolchain
+      run: ./scripts/build_toolchain.sh
 
     - name: Build Istar
       run: make
