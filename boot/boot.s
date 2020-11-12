@@ -1,4 +1,4 @@
-org 0x07C00
+org 0x7C00
 bits 16
 
 jmp start
@@ -7,6 +7,7 @@ jmp start
 ;; Data
 ;; ============================================================================
 msg_hello: db "Istar: Hello World!", 0x0D, 0x0A, 0
+msg_error_reset: db "Error: can't reset disk", 0x0D, 0x0A, 0
 msg_error_stage2: db "Error: can't load stage 2", 0x0D, 0x0A, 0
 
 ;; ----------------------------------------------------------------------------
@@ -41,7 +42,6 @@ bios_print:
 ;; ----------------------------------------------------------------------------
 ;; entry
 ;; ----------------------------------------------------------------------------
-
 start:
 	cli
 
@@ -58,10 +58,17 @@ start:
 	mov si, msg_hello
 	call bios_print
 
-	; read disk
-	mov ax, 0x100
+	; reset disk to sector 0
+	.reset_disk:
+		xor ah, ah
+		xor dl, dl
+		int 0x13
+		jc .err_reset_disk
+
+	mov ax, 0x800 ; stage 2 will be loader at 0x800:0
 	mov es, ax
 	xor bx, bx
+
 	xor ch, ch
 	mov cl, 0x02
 	mov al, 0x01 ; read one sector
@@ -75,7 +82,10 @@ start:
 	or eax, 1
 	mov cr0, eax
 
-	jmp .next
+	jmp 0x08:.next
+
+bits 32
+
 	.next:
 	mov ax, 0x10
 	mov ds, ax
@@ -84,11 +94,18 @@ start:
 	mov gs, ax
 	mov ss, ax
 
-	jmp 0x08:1000
+	jmp 0x8000
+
+bits 16
 
 	.end:
 		hlt
 		jmp $
+	
+	.err_reset_disk:
+		mov si, msg_error_reset
+		call bios_print
+		jmp .end
 
 	.err_load_stage2:
 		mov si, msg_error_stage2
