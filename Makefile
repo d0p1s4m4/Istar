@@ -5,7 +5,7 @@ AS	= nasm
 RM	= rm -f
 
 CFLAGS	= -ansi -pedantic -pedantic-errors -Wall -Werror -Wextra \
-			-ffreestanding -fno-builtin -nostdlib -nostdinc -O2 \
+			-ffreestanding -fno-builtin -nostdlib -nostdinc -Os \
 			-Iinclude
 ASFLAGS	= -felf32
 LDFLAGS	= -nostdlib -Tstage2/linker.ld

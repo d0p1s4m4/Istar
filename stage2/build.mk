@@ -1,5 +1,5 @@
-SRCS_ASM	= stage2.s
-SRCS_C		= 
+SRCS_ASM	=
+SRCS_C		= stage2.c vga.c
 OBJS		= $(addprefix stage2/, $(SRCS_ASM:.s=.s.o)) \
 				$(addprefix stage2/, $(SRCS_C:.c=.o))
 

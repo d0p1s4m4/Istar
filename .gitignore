@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# editor shit 
+*~
+
 # Object files
 *.o
 *.ko
