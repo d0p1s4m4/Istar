@@ -34,4 +34,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+qemu: $(TARGET)
+	qemu-kvm -hda $^
+
+.PHONY: all clean fclean re qemu
