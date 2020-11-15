@@ -44,7 +44,8 @@ bios_print:
 ;; ----------------------------------------------------------------------------
 start:
 	cli
-
+    jmp 0x0:.canonicalize_cs_eip
+    .canonicalize_cs_eip:
 	; setup segments to zero
 	xor ax, ax
 	mov ds, ax
@@ -61,7 +62,6 @@ start:
 	; reset disk to sector 0
 	.reset_disk:
 		xor ah, ah
-		xor dl, dl
 		int 0x13
 		jc .err_reset_disk
 
