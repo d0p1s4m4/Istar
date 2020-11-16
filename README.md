@@ -1,6 +1,8 @@
 <div align="center">
 
-# Istar
+<img src=".github/Istar.svg">
+
+---
 
 [![License](https://img.shields.io/github/license/d0p1s4m4/Istar?logo=gnu&style=flat-square)](LICENSE)
 [![Build](https://img.shields.io/github/workflow/status/d0p1s4m4/Istar/CI?logo=github&style=flat-square)](https://github.com/d0p1s4m4/Istar/actions?query=workflow%3ACI)
