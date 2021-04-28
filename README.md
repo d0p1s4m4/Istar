@@ -11,8 +11,9 @@
 
 </div>
 
-A minimalist bootloader
+Yet another minimalist bootloader written in x86 assembly.
 
+For people wondering what Istar mean:
 ```
 Istar: (Quenya) proper name. Wizard, (lit.) One Who Knows
 ```
