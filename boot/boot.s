@@ -1,3 +1,31 @@
+; Copyright (c) 2021, d0p1
+; All rights reserved.
+;
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+;
+; 1. Redistributions of source code must retain the above copyright notice, this
+;    list of conditions and the following disclaimer.
+;
+; 2. Redistributions in binary form must reproduce the above copyright notice,
+;    this list of conditions and the following disclaimer in the documentation
+;    and/or other materials provided with the distribution.
+;
+; 3. Neither the name of the copyright holder nor the names of its
+;    contributors may be used to endorse or promote products derived from
+;    this software without specific prior written permission.
+;
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+; DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+; FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+; DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+; SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+; OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 org 0x7C00
 bits 16
 
@@ -11,6 +39,7 @@ times 0x5A - ($ - $$) db 0
 msg_hello: db "Istar: Hello World!", 0x0D, 0x0A, 0
 msg_error_reset: db "Error: can't reset disk", 0x0D, 0x0A, 0
 msg_error_stage2: db "Error: can't load stage 2", 0x0D, 0x0A, 0
+msg_press_any_key_to_reboot: db "Press any key to reboot", 0x0D, 0x0A, 0
 
 ;; ----------------------------------------------------------------------------
 ;;  gdt 
@@ -72,7 +101,7 @@ start:
 	xor bx, bx
 
 	xor ch, ch
-	mov cl, 0x02
+	mov cl, 0x02 ; sector n°2
 	mov al, 0x01 ; read one sector
 	mov ah, 0x02
 	int 0x13
@@ -103,16 +132,23 @@ bits 16
 	.end:
 		hlt
 		jmp $
-	
+
+	.wait_for_reboot:
+		mov si, msg_press_any_key_to_reboot
+		call bios_print
+		xor ah, ah ; ah = 0 read char
+		int 0x16   ; keyboard service
+		int 0x19   ; reboot computer
+
 	.err_reset_disk:
 		mov si, msg_error_reset
 		call bios_print
-		jmp .end
+		jmp .wait_for_reboot
 
 	.err_load_stage2:
 		mov si, msg_error_stage2
 		call bios_print
-		jmp .end
+		jmp .wait_for_reboot
 
 times 510 - ($ - $$) db 0x90
 dw 0xAA55
