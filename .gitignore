@@ -39,6 +39,8 @@
 *.x86_64
 *.hex
 *.bin
+*.efi
+*.EFI
 
 # Debug files
 *.dSYM/
@@ -58,6 +60,9 @@ dkms.conf
 # ide shit
 .vscode
 
-
 # binary
 istar-cli
+
+OVMF.fd
+
+.test
