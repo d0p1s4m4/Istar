@@ -1,14 +1,25 @@
-EFI_CC		= clang -target x86_64-unknown-windows
+EFI_CC			= clang
 
-EFI_CFLAGS	= $(COMMON_CFLAGS) -ffreestanding -fshort-wchar -mno-red-zone
-EFI_LDFLAGS	= -nostdlib -Wl,-entry:efi_main -Wl,-subsystem:efi_application \
-				-fuse-ld=lld-link
+EFI_TARGET_IA32	= i686-unknown-windows
+EFI_TARGET_X64	= x86_64-unknown-windows
 
-EFI_SRCS	= main.c
-EFI_OBJS	= $(addprefix efi/, $(EFI_SRCS:.c=.o))
+EFI_CFLAGS		= $(COMMON_CFLAGS) -ffreestanding -fshort-wchar -mno-red-zone
+EFI_LDFLAGS		= -nostdlib -Wl,-entry:efi_main -Wl,-subsystem:efi_application \
+					-fuse-ld=lld-link
 
-BOOTX64.EFI: $(EFI_OBJS)
-	$(EFI_CC) -o $@ $^ $(EFI_LDFLAGS)
+EFI_SRCS		= main.c
+EFI_X64_OBJS	= $(addprefix efi/, $(EFI_SRCS:.c=.x64.o))
+EFI_IA32_OBJS	= $(addprefix efi/, $(EFI_SRCS:.c=.ia32.o))
+EFI_OBJS 		= $(EFI_IA32_OBJS) $(EFI_X64_OBJS)
 
-efi/%.o: efi/%.c
-	$(EFI_CC) -c -o $@ $< $(CFLAGS)
+BOOTX64.EFI: $(EFI_X64_OBJS)
+	$(EFI_CC) -target $(EFI_TARGET_X64) -o $@ $^ $(EFI_LDFLAGS)
+
+BOOTIA32.EFI: $(EFI_IA32_OBJS)
+	$(EFI_CC)  -target $(EFI_TARGET_IA32) -o $@ $^ $(EFI_LDFLAGS)
+
+efi/%.x64.o: efi/%.c
+	$(EFI_CC) -target $(EFI_TARGET_X64) -c -o $@ $< $(EFI_CFLAGS)
+
+efi/%.ia32.o: efi/%.c
+	$(EFI_CC) -target $(EFI_TARGET_IA32) -c -o $@ $< $(EFI_CFLAGS)
