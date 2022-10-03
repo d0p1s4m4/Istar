@@ -28,7 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdint.h>
 #ifndef ISTAR_EFI_H
 # define ISTAR_EFI_H 1
 

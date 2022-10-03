@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,68 +28,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/efi/types.h"
-#include "istar/memory.h"
-#include "istar/types.h"
 #include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
+void *
+memory_alloc(uintn_t size)
 {
-	EfiFileProtocol *fp;
-	char *buff;
-	uintn_t size;
-	uintn_t i;
-	wchar_t *wbuff;
+	EfiBootServices *boot;
+	void *ptr;
 
-	efi_initialize(handle, system_table);
+	boot = efi_get_boot_services();
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
+	if (boot == NULL)
+		return (NULL);
 	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
+	if (boot->allocate_pool(EFI_BOOT_SERVICES_DATA, size, &ptr) != EFI_SUCCESS)
+		return (NULL);
+	
+	return (ptr);
+}
 
-	if (fs_initialize() < 0)
-	{
-		console_print(L"Can't open volume");
-		return (-1);
-	}
+void
+memory_free(void *ptr)
+{
+	EfiBootServices *boot;
 
-	if ((fp = fs_open(L"EFI\\BOOT\\istar.lisp")) == NULL)
-	{
-		console_print(L"can't open istar.lisp");
-	}
+	boot = efi_get_boot_services();
 
-	if ((buff = fs_readall(fp, &size)) == NULL)
-	{
-		console_print(L"can't read istar.lisp");
-	}
-	else
-	{
-		wbuff = memory_alloc((size + 1) * sizeof(wchar_t));
-		if (wbuff != NULL)
-		{
-			for (i = 0; i < size; i++)
-			{
-				wbuff[i] = buff[i];
-			}
-			wbuff[size] = 0;
-			console_print(wbuff);
-		}
-		else {
-			console_print(L"Can't alloc wbuff");
-		}
-	}
-
-	while (1);
-	return (0);
+	if (boot == NULL)
+		return;
+	
+	boot->free_pool(ptr);
 }

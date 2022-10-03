@@ -28,68 +28,84 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
 #include "istar/efi/types.h"
-#include "istar/memory.h"
-#include "istar/types.h"
 #include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
+#include <istar/efi/protocol/file.h>
 #include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#include <istar/efi/protocol/simple_file_system.h>
+#include <istar/memory.h>
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
+static EfiLoadedImageProtocol *fs_loaded_image = NULL;
+static EfiSimpleFileSystemProtocol *fs_volume = NULL;
+static EfiFileProtocol *fs_root = NULL;
+
+int
+fs_initialize(void)
+{
+	static EfiGuid loaded_image_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+	static EfiGuid simple_file_system_guid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+	EfiBootServices *boot;
+
+	boot = efi_get_boot_services();
+	if (boot == NULL)
+	{
+		return (-1);
+	}
+
+	if (boot->open_protocol(efi_get_handle(), &loaded_image_guid,
+		(void **)&fs_loaded_image, efi_get_handle(), NULL,
+		EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL) != EFI_SUCCESS)
+	{
+		return (-1);
+	}
+
+	if (boot->open_protocol(fs_loaded_image->device_handle,
+		&simple_file_system_guid, (void **)&fs_volume, efi_get_handle(),
+		NULL, EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL) != EFI_SUCCESS)
+	{
+		return (-1);
+	}
+
+	if (fs_volume->open_volume(fs_volume, &fs_root) != EFI_SUCCESS)
+	{
+		return (-1);
+	}
+
+	return (0);
+}
+
+EfiFileProtocol *
+fs_open(wchar_t *file)
 {
 	EfiFileProtocol *fp;
-	char *buff;
-	uintn_t size;
-	uintn_t i;
-	wchar_t *wbuff;
 
-	efi_initialize(handle, system_table);
-
-	if (console_initialize() < 0)
+	if (fs_root->open(fs_root, &fp, file, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY))
 	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
-
-	if (fs_initialize() < 0)
-	{
-		console_print(L"Can't open volume");
-		return (-1);
+		return (NULL);
 	}
 
-	if ((fp = fs_open(L"EFI\\BOOT\\istar.lisp")) == NULL)
+	return (fp);
+}
+
+char *
+fs_readall(EfiFileProtocol *fp, uintn_t *size)
+{
+	char *content;
+
+	*size = 511;
+	/*fp->read(fp, size, NULL);*/
+
+	content = memory_alloc(*size + 1);
+	if (content == NULL)
 	{
-		console_print(L"can't open istar.lisp");
+		return (NULL);
 	}
 
-	if ((buff = fs_readall(fp, &size)) == NULL)
+	content[*size] = '\0';
+	if (fp->read(fp, size, content) != EFI_SUCCESS)
 	{
-		console_print(L"can't read istar.lisp");
+		memory_free(content);
+		return (NULL);
 	}
-	else
-	{
-		wbuff = memory_alloc((size + 1) * sizeof(wchar_t));
-		if (wbuff != NULL)
-		{
-			for (i = 0; i < size; i++)
-			{
-				wbuff[i] = buff[i];
-			}
-			wbuff[size] = 0;
-			console_print(wbuff);
-		}
-		else {
-			console_print(L"Can't alloc wbuff");
-		}
-	}
-
-	while (1);
-	return (0);
+	return (content);
 }

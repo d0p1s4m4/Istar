@@ -28,68 +28,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/efi/types.h"
-#include "istar/memory.h"
-#include "istar/types.h"
-#include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#ifndef ISTAR_FS_H
+# define ISTAR_FS_H 1
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
-{
-	EfiFileProtocol *fp;
-	char *buff;
-	uintn_t size;
-	uintn_t i;
-	wchar_t *wbuff;
+# include <istar/types.h>
+# include <istar/efi/types.h>
+# include <istar/efi/protocol/file.h>
 
-	efi_initialize(handle, system_table);
+int fs_initialize(void);
+EfiFileProtocol *fs_open(wchar_t *file);
+char *fs_readall(EfiFileProtocol *fp, uintn_t *size);
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
-
-	if (fs_initialize() < 0)
-	{
-		console_print(L"Can't open volume");
-		return (-1);
-	}
-
-	if ((fp = fs_open(L"EFI\\BOOT\\istar.lisp")) == NULL)
-	{
-		console_print(L"can't open istar.lisp");
-	}
-
-	if ((buff = fs_readall(fp, &size)) == NULL)
-	{
-		console_print(L"can't read istar.lisp");
-	}
-	else
-	{
-		wbuff = memory_alloc((size + 1) * sizeof(wchar_t));
-		if (wbuff != NULL)
-		{
-			for (i = 0; i < size; i++)
-			{
-				wbuff[i] = buff[i];
-			}
-			wbuff[size] = 0;
-			console_print(wbuff);
-		}
-		else {
-			console_print(L"Can't alloc wbuff");
-		}
-	}
-
-	while (1);
-	return (0);
-}
+#endif /* !ISTAR_FS_H */

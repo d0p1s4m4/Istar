@@ -1,0 +1,9 @@
+-ffreestanding
+-fshort-wchar
+-mno-red-zone
+-ansi
+-pedantic
+-Werror
+-Wextra
+-Wall
+-Iinclude

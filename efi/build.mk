@@ -8,7 +8,7 @@ EFI_CFLAGS		= $(COMMON_CFLAGS) -ffreestanding -fshort-wchar -mno-red-zone \
 EFI_LDFLAGS		= -fno-builtin -nostdlib -Wl,-entry:efi_main -Wl,-subsystem:efi_application \
 					-fuse-ld=lld-link
 
-EFI_SRCS		= main.c console.c
+EFI_SRCS		= main.c console.c memory.c fs.c efi.c
 EFI_X64_OBJS	= $(addprefix efi/, $(EFI_SRCS:.c=.x64.o))
 EFI_IA32_OBJS	= $(addprefix efi/, $(EFI_SRCS:.c=.ia32.o))
 EFI_OBJS 		= $(EFI_IA32_OBJS) $(EFI_X64_OBJS)
