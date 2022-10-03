@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/types.h"
-#include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#ifndef ISTAR_EFI_SERVICE_RUNTIME_H
+# define ISTAR_EFI_SERVICE_RUNTIME_H 1
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
-{
-	efi_initialize(handle, system_table);
+# include <istar/efi/types.h>
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
+/* signature --------------------------------------------------------------- */
 
-	while (1);
-	return (0);
-}
+# define EFI_RUNTIMES_SERVICES_HEADER_SIGNATURE 0x56524553544e5552
+
+/* runtime services -------------------------------------------------------- */
+
+typedef struct {
+	EfiTableHeader header;
+} EfiRuntimeServices;
+
+#endif /* !ISTAR_EFI_SERVICE_RUNTIME_H */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/types.h"
-#include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#ifndef ISTAR_EFI_PROTOCOL_SIMPLE_FILE_SYSTEM_H
+# define ISTAR_EFI_PROTOCOL_SIMPLE_FILE_SYSTEM_H 1
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
-{
-	efi_initialize(handle, system_table);
+# include <istar/efi/protocol/file.h>
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
+/* guid -------------------------------------------------------------------- */
 
-	while (1);
-	return (0);
-}
+# define EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID {0x0964e5b22,0x6459,0x11d2, \
+									{0x8e,0x39,0x00,0xa0,0xc9,0x69,0x72,0x3b}}
+
+
+/* revision ---------------------------------------------------------------- */
+
+# define EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_REV 0x00010000
+
+/* protocol structure ------------------------------------------------------ */
+
+typedef struct efi_simple_filesystem_protocol {
+	uint64_t revision;
+	EfiStatus   (*open_volume)(struct efi_simple_filesystem_protocol *, \
+								EfiFileProtocol **);
+} EfiSimpleFileSystemProtocol;
+
+#endif /* !ISTAR_EFI_PROTOCOL_SIMPLE_FILE_SYSTEM_H */

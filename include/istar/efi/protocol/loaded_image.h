@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/types.h"
-#include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#ifndef ISTAR_EFI_PROTOCOL_LOADED_IMAGE_H
+# define ISTAR_EFI_PROTOCOL_LOADED_IMAGE_H 1
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
-{
-	efi_initialize(handle, system_table);
+# include <istar/efi.h>
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
+/* guid -------------------------------------------------------------------- */
 
-	while (1);
-	return (0);
-}
+# define EFI_LOADED_IMAGE_PROTOCOL_GUID {0x5B1B31A1,0x9562,0x11d2,\
+									{0x8E,0x3F,0x00,0xA0,0xC9,0x69,0x72,0x3B}}
+
+/* revision ---------------------------------------------------------------- */
+
+# define EFI_LOADED_IMAGE_PROTOCOL_REV 0x1000
+
+/* protocol structure ------------------------------------------------------ */
+
+typedef struct {
+	uint64_t revision;
+	EfiHandle parent_handle;
+	EfiSystemTable *system_table;
+
+	EfiHandle device_handle;
+	void *file_path;
+	void *reserved;
+
+	uint32_t load_options_size;
+	void *load_options;
+
+	void *image_base;
+	uint64_t image_size;
+	EfiMemoryType image_code_type;
+	EfiMemoryType image_data_type;
+	void *unload;
+} EfiLoadedImageProtocol;
+
+#endif /* !ISTAR_EFI_PROTOCOL_LOADED_IMAGE_H */

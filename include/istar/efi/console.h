@@ -28,28 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/protocol/file.h"
-#include "istar/types.h"
-#include <istar/efi.h>
-#include <istar/efi/console.h>
-#include <istar/efi/protocol/simple_file_system.h>
-#include <istar/efi/protocol/loaded_image.h>
-#include <istar/fs.h>
+#ifndef ISTAR_EFI_CONSOLE_H
+# define ISTAR_EFI_CONSOLE_H 1
 
-EfiStatus
-efi_main(EfiHandle handle, EfiSystemTable *system_table)
-{
-	efi_initialize(handle, system_table);
+# include <istar/efi.h>
 
-	if (console_initialize() < 0)
-	{
-		return (-1);
-	}
-	
-	console_print(L"VENDOR: ");
-	console_print(system_table->firmware_vendor);
-	console_print(L"\r\n");
+int console_initialize(void);
+void console_print(wchar_t *wstr);
 
-	while (1);
-	return (0);
-}
+#endif /* !ISTAR_EFI_CONSOLE_H */

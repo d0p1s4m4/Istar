@@ -28,12 +28,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdint.h>
 #ifndef ISTAR_EFI_H
 # define ISTAR_EFI_H 1
 
 /* spec: https://uefi.org/sites/default/files/resources/UEFI_Spec_2_9_2021_03_18.pdf */
 
 # include <istar/types.h>
+# include <istar/efi/service/boot.h>
+# include <istar/efi/service/runtime.h>
+# include <istar/efi/protocol/simple_text_input.h>
+# include <istar/efi/protocol/simple_text_output.h>
 
 /* Spec version ------------------------------------------------------------- */
 
@@ -54,45 +59,23 @@
 /* header signature --------------------------------------------------------- */
 
 # define EFI_SYSTEM_TABLE_HEADER_SIGNATURE      0x5453595320494249
-# define EFI_BOOT_SERVICES_HEADER_SIGNATURE     0x56524553544f4f42
-# define EFI_RUNTIMES_SERVICES_HEADER_SIGNATURE 0x56524553544e5552
-# define EFI_
 
-/* efi struct --------------------------------------------------------------- */
+/* return value ------------------------------------------------------------- */
 
-typedef uintn_t EfiStatus;
-typedef void *EfiHandle;
+# define EFI_SUCCESS 0
 
-typedef struct {
-	uint64_t signature;
-	uint32_t revision;
-	uint32_t header_size;
-	uint32_t crc32;
-	uint32_t reserved;
-} EfiTableHeader;
+/* time -------------------------------------------------------------------- */
 
-typedef struct {
-	EfiTableHeader header;
-} EfiBootServices;
+# define EFI_TIME_ADJUST_DAYLIGHT	0x01
+# define EFI_TIME_IN_DAYLIGHT		0x02
 
-typedef struct {
-	EfiTableHeader header;
-} EfiRuntimeServices;
+# define EFI_UNSPECIFIED_TIMEZONE	0x07FF
+
+/* efi table --------------------------------------------------------------- */
 
 typedef struct {
 	EfiTableHeader header;
 } EfiConfigurationTable;
-
-typedef struct {
-	void *tmp;
-} EfiSimpleTextInputProtocol;
-
-
-typedef struct efi_simple_text_output_protocol {
-	EfiStatus	(*reset)(struct efi_simple_text_output_protocol *, boolean_t);
-	EfiStatus	(*wprint)(struct efi_simple_text_output_protocol *, wchar_t *);
-} EfiSimpleTextOutputProtocol;
-
 
 typedef struct {
 	EfiTableHeader header;
@@ -109,5 +92,10 @@ typedef struct {
 	uintn_t table_entries_count;
 	EfiConfigurationTable *config_table;
 } EfiSystemTable;
+
+void efi_initialize(EfiHandle handle, EfiSystemTable *table);
+EfiSystemTable *efi_get_system_table(void);
+EfiHandle *efi_get_handle(void);
+EfiBootServices *efi_get_boot_services(void);
 
 #endif /* !ISTAR_EFI_H */

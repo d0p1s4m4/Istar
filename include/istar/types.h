@@ -33,38 +33,10 @@
 
 # include <stdint.h>
 
-/*
- * +---------------------------------------------------------------------------+
- * | ALL TYPES BELLOW ARE ONLY FOR EFI DO NOT USE ELSE WHERE                   |
- * +---------------------------------------------------------------------------+
- */
+/* NULL --------------------------------------------------------------------- */
 
-# if defined(__x86_64__)
-typedef uint64_t uintn_t;
-typedef int64_t intn_t;
-# elif defined(__i386__)
-typedef uint32_t uintn_t;
-typedef int32_t intn_t;
-# else
-# warning "Can't define uintn_t and intn_t"
-# endif /* __x86_64 */
-
-/* wchar -------------------------------------------------------------------- */
-
-typedef uint16_t wchar_t;
-
-/* boolean ------------------------------------------------------------------ */
-
-# ifdef TRUE
-#  undef TRUE
-# endif /* TRUE */
-# define TRUE 1
-
-# ifdef FALSE
-#  undef FALSE
-# endif /* FALSE */
-# define FALSE 0
-
-typedef uint8_t boolean_t;
+# ifndef NULL
+#  define NULL ((void *)0)
+# endif /* !NULL */
 
 #endif /* !ISTAR_TYPES_H */
