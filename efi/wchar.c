@@ -1,5 +1,4 @@
-#include "istar/efi/types.h"
-#include <istar/types.h>
+#include <istar/efi/types.h>
 
 wchar_t *
 char_to_wchar(wchar_t *dest, char *src, size_t size)

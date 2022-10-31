@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "istar/efi/types.h"
-#include "istar/efi/wchar.h"
-#include "istar/fs.h"
-#include <istar/efi.h>
-#include <istar/efi/protocol/file.h>
+#include <istar/fs.h>
 #include <istar/efi/protocol/loaded_image.h>
 #include <istar/efi/protocol/simple_file_system.h>
 #include <istar/memory.h>
@@ -124,11 +120,11 @@ fs_readall(FILE *fp, size_t *size)
 		return (NULL);
 	}
 
-	content[*size] = '\0';
 	if (efi_fp->read(fp, (uintn_t *)size, content) != EFI_SUCCESS)
 	{
 		memory_free(content);
 		return (NULL);
 	}
+	content[*size] = '\0';
 	return (content);
 }

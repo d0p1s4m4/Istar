@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ISTAR_EFI_CONSOLE_H
-# define ISTAR_EFI_CONSOLE_H 1
+#ifndef ISTAR_CONSOLE_H
+# define ISTAR_CONSOLE_H 1
 
-# include <istar/efi.h>
+# include <stdarg.h>
+
+# ifdef __EFI__
+#  include <istar/efi/wchar.h>
+# endif /* __EFI__ */
 
 int console_initialize(void);
-void console_print(wchar_t *wstr);
+void console_putchar(char c);
+void console_printf(char *str, ...);
 
-#endif /* !ISTAR_EFI_CONSOLE_H */
+# ifdef __EFI__
+void console_wprint(wchar_t *wstr);
+# endif /* __EFI__ */
+
+#endif /* !ISTAR_CONSOLE_H */

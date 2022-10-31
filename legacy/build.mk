@@ -7,8 +7,8 @@ LEGACY_LDFLAGS	= -T legacy/stage2/linker.ld -nostdlib
 
 LEGACY_SRCS	= boot/boot.s stage2/stage2.s
 LEGACY_STAGE2_SRCS = entry.s vga.s
-LEGACY_STAGE2_OBJS = $(addprefix legacy/stage2/, $(LEGACY_STAGE2_SRCS:.s=.o)) \
-						$(addprefix common/, $(COMMON_SRCS:.c=.legacy.o))
+LEGACY_STAGE2_OBJS = $(addprefix legacy/stage2/, $(LEGACY_STAGE2_SRCS:.s=.o))
+#						$(addprefix common/, $(COMMON_SRCS:.c=.legacy.o))
 LEGACY_OBJS	= $(addprefix legacy/, $(LEGACY_SRCS:.s=.bin))
 
 istar.bin: $(LEGACY_OBJS)

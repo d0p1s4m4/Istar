@@ -4,7 +4,7 @@ CC	?= clang
 LD	?= ld
 RM	= rm -f
 
-COMMON_CFLAGS	= -ansi -pedantic -Werror -Wextra -Wall -Iinclude
+COMMON_CFLAGS	= -ansi -pedantic -Werror -Wextra -Wall -Iinclude -Wno-long-long
 CFLAGS	= $(COMMON_CFLAGS)
 
 include common/build.mk

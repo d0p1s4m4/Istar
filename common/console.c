@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,19 +28,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ISTAR_TYPES_H
-# define ISTAR_TYPES_H 1
+#include <istar/console.h>
+#include <stdarg.h>
 
-# include <stdint.h>
+static void
+console_print(char *ptr)
+{
+	while (*ptr != 0)
+	{
+		console_putchar(*ptr++);
+	}
+}
 
-/* NULL -------------------------------------------------------------------- */
+void
+console_printf(char *str, ...)
+{
+	va_list arg;
 
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif /* !NULL */
-
-/* size_t ------------------------------------------------------------------ */
-
-typedef __SIZE_TYPE__ size_t;
-
-#endif /* !ISTAR_TYPES_H */
+	va_start(arg, str);
+	while (*str != 0)
+	{
+		if (*str == '%')
+		{
+			str++;
+			switch (*str)
+			{
+				case 's':
+					console_print(va_arg(arg, char *));
+					break;
+#ifdef __EFI__
+				case 'w':
+					console_wprint(va_arg(arg, wchar_t *));
+					break;
+#endif
+				
+				default:
+					console_putchar('?');
+					break;
+			}
+		}
+		else
+		{
+			console_putchar(*str);
+		}
+		str++;
+	}
+	va_end(arg);
+}

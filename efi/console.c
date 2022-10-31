@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdarg.h>
+#include <istar/console.h>
 #include <istar/efi.h>
 
 static EfiSimpleTextOutputProtocol *console_out = NULL;
@@ -50,11 +50,30 @@ console_initialize(void)
 }
 
 void
-console_print(wchar_t *wstr)
+console_wprint(wchar_t *wstr)
 {
 	if (console_out == NULL)
 		return;
 
 	console_out->wprint(console_out, wstr);
+}
+
+void
+console_putchar(char c)
+{
+	static wchar_t buffer[2] = { 0 };
+
+	if (console_out == NULL)
+		return;
+
+	if (c == '\n')
+	{
+		console_wprint(L"\r\n"); /* fuck efi */
+	}
+	else
+	{
+		buffer[0] = c;
+		console_out->wprint(console_out, buffer);
+	}
 }
 
