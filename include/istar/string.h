@@ -28,11 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ISTAR_UTILS_H
-# define ISTAR_UTILS_H 1
+#ifndef ISTAR_STRING_H
+# define ISTAR_STRING_H 1
 
 # include <istar/types.h>
 
 void *memset(void *str, int c, uintptr_t n);
 
-#endif /* !ISTAR_UTILS_H */
+#endif /* !ISTAR_STRING_H */

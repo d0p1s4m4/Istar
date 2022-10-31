@@ -31,7 +31,7 @@
 #ifndef ISTAR_EFI_TYPES_H
 # define ISTAR_EFI_TYPES_H 1
 
-# include <stdint.h>
+# include <istar/efi/wchar.h>
 
 /* uintn_t, intn_t --------------------------------------------------------- */
 
@@ -44,10 +44,6 @@ typedef int32_t intn_t;
 # else
 #  error "Can't define uintn_t & intn_t"
 # endif /* __x86_64__ */
-
-/* wchar_t ----------------------------------------------------------------- */
-
-typedef uint16_t wchar_t;
 
 /* boolean_t --------------------------------------------------------------- */
 

@@ -64,5 +64,6 @@ dkms.conf
 istar-cli
 
 OVMF.fd
+OVMF32.fd
 
 .test

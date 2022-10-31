@@ -7,7 +7,7 @@
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
-
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
@@ -32,11 +32,13 @@
 # define ISTAR_FS_H 1
 
 # include <istar/types.h>
-# include <istar/efi/types.h>
-# include <istar/efi/protocol/file.h>
+
+# define FILE void
+# define MAX_PATH 128
 
 int fs_initialize(void);
-EfiFileProtocol *fs_open(wchar_t *file);
-char *fs_readall(EfiFileProtocol *fp, uintn_t *size);
+FILE *fs_open(char *path);
+char *fs_readall(FILE *fp, size_t *size);
+void fs_close(FILE *fp);
 
 #endif /* !ISTAR_FS_H */

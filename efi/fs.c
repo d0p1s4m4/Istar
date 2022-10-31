@@ -29,6 +29,8 @@
  */
 
 #include "istar/efi/types.h"
+#include "istar/efi/wchar.h"
+#include "istar/fs.h"
 #include <istar/efi.h>
 #include <istar/efi/protocol/file.h>
 #include <istar/efi/protocol/loaded_image.h>
@@ -38,6 +40,25 @@
 static EfiLoadedImageProtocol *fs_loaded_image = NULL;
 static EfiSimpleFileSystemProtocol *fs_volume = NULL;
 static EfiFileProtocol *fs_root = NULL;
+
+static wchar_t *
+fs_convert_path(char *path)
+{
+	static wchar_t translated[MAX_PATH];
+	size_t i;
+
+	char_to_wchar(translated, path, MAX_PATH);
+
+	for (i = 0; translated[i] != 0; i++)
+	{
+		if (translated[i] == '/')
+		{
+			translated[i] = '\\';
+		}
+	}
+
+	return (translated);
+}
 
 int
 fs_initialize(void)
@@ -74,12 +95,12 @@ fs_initialize(void)
 	return (0);
 }
 
-EfiFileProtocol *
-fs_open(wchar_t *file)
+FILE *
+fs_open(char *path)
 {
 	EfiFileProtocol *fp;
 
-	if (fs_root->open(fs_root, &fp, file, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY))
+	if (fs_root->open(fs_root, &fp, fs_convert_path(path), EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY))
 	{
 		return (NULL);
 	}
@@ -88,10 +109,12 @@ fs_open(wchar_t *file)
 }
 
 char *
-fs_readall(EfiFileProtocol *fp, uintn_t *size)
+fs_readall(FILE *fp, size_t *size)
 {
+	EfiFileProtocol *efi_fp;
 	char *content;
 
+	efi_fp = (EfiFileProtocol *)fp;
 	*size = 511;
 	/*fp->read(fp, size, NULL);*/
 
@@ -102,7 +125,7 @@ fs_readall(EfiFileProtocol *fp, uintn_t *size)
 	}
 
 	content[*size] = '\0';
-	if (fp->read(fp, size, content) != EFI_SUCCESS)
+	if (efi_fp->read(fp, (uintn_t *)size, content) != EFI_SUCCESS)
 	{
 		memory_free(content);
 		return (NULL);
