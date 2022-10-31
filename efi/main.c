@@ -30,6 +30,7 @@
 
 #include <istar/console.h>
 #include <istar/fs.h>
+#include <istar/memory.h>
 #include <istar/efi.h>
 
 EfiStatus
@@ -37,7 +38,6 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 {
 	FILE *fp;
 	char *buff;
-	uintn_t size;
 
 	efi_initialize(handle, system_table);
 
@@ -59,7 +59,7 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 		console_printf("can't open istar.lisp\n");
 	}
 
-	if ((buff = fs_readall(fp, (size_t *)&size)) == NULL)
+	if ((buff = fs_readall(fp)) == NULL)
 	{
 		console_printf("can't read istar.lisp\n");
 	}
@@ -67,6 +67,8 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 	{
 		console_printf(buff);
 	}
+	memory_free(buff);
+	fs_close(fp);
 
 	while (1);
 	return (0);

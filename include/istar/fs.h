@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, d0p1
+ * Copyright (c) 2022, d0p1
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 
 int fs_initialize(void);
 FILE *fs_open(char *path);
-char *fs_readall(FILE *fp, size_t *size);
+char *fs_readall(FILE *fp);
 void fs_close(FILE *fp);
 
 #endif /* !ISTAR_FS_H */

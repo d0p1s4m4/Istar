@@ -28,6 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "istar/efi/protocol/file.h"
+#include "istar/efi/types.h"
 #include <istar/fs.h>
 #include <istar/efi/protocol/loaded_image.h>
 #include <istar/efi/protocol/simple_file_system.h>
@@ -104,27 +106,45 @@ fs_open(char *path)
 	return (fp);
 }
 
+static uintn_t
+fs_file_size(EfiFileProtocol *fp)
+{
+	static EfiFileInfo info;
+	uintn_t size = sizeof(EfiFileProtocol);
+	EfiGuid guid = EFI_FILE_INFO_ID;
+
+	fp->get_info(fp, &guid, &size, &info);
+
+	return (info.file_size);
+}
+
 char *
-fs_readall(FILE *fp, size_t *size)
+fs_readall(FILE *fp)
 {
 	EfiFileProtocol *efi_fp;
+	uintn_t size;
 	char *content;
 
 	efi_fp = (EfiFileProtocol *)fp;
-	*size = 511;
-	/*fp->read(fp, size, NULL);*/
 
-	content = memory_alloc(*size + 1);
+	size = fs_file_size(fp);
+	content = memory_alloc(size + 1);
 	if (content == NULL)
 	{
 		return (NULL);
 	}
 
-	if (efi_fp->read(fp, (uintn_t *)size, content) != EFI_SUCCESS)
+	if (efi_fp->read(fp, &size, content) != EFI_SUCCESS)
 	{
 		memory_free(content);
 		return (NULL);
 	}
-	content[*size] = '\0';
+	content[size] = '\0';
 	return (content);
+}
+
+void
+fs_close(FILE *fp)
+{
+	fs_root->close(fp);
 }

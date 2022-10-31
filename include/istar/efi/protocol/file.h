@@ -80,10 +80,10 @@ typedef struct efi_file_protocol {
 	EfiStatus	(*flush)(struct efi_file_protocol *);
 
 	/* Only in rev 2 */
-	EfiStatus	(*open_ex)();
-	EfiStatus	(*read_ex)();
-	EfiStatus	(*write_ex)();
-	EfiStatus	(*flush_ex)();
+	EfiStatus	(*open_ex)(void);
+	EfiStatus	(*read_ex)(void);
+	EfiStatus	(*write_ex)(void);
+	EfiStatus	(*flush_ex)(void);
 } EfiFileProtocol;
 
 typedef struct {
