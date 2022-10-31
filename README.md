@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src=".github/Istar.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/Istar-alt.svg">
+  <img src=".github/Istar.svg">
+</picture>
 
 ---
 
@@ -11,9 +14,17 @@
 
 </div>
 
-Yet another minimalist bootloader written in x86 assembly.
+A tiny [handover](https://github.com/devse-org/handover) bootloader in C and x86 assembly
 
 For people wondering what Istar mean:
 ```
 Istar: (Quenya) proper name. Wizard, (lit.) One Who Knows
 ```
+
+# License
+
+<img src="https://opensource.org/files/OSI_Approved_License.png" align="right" height="128px" alt="OSI Approved License">
+
+Istar is licensed under the 3-Clause BSD License.
+
+The full text of the license can be accessed via [this link](https://opensource.org/licenses/BSD-3-Clause) and is also included in [the license file](LICENSE) of this software package.
