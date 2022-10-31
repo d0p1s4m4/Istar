@@ -35,6 +35,11 @@
 %define CRTC_CURSOR_START_REG 0x0A
 %define CRTC_DISABLE_CURSOR 0b00100000
 
+global vga_init
+global vga_clear
+global vga_putstr
+global vga_putchar
+
 vga_x: db 0
 vga_y: db 0
 
@@ -62,6 +67,15 @@ vga_clear:
 	rep stosd
 	ret
 
+vga_scroll_down:
+	mov byte [vga_x], 0x00
+	cmp byte [vga_y], VGA_HEIGHT
+	jae .scroll
+	inc byte [vga_y]
+	ret
+	.scroll:
+		ret
+
 vga_putchar:
 	mov bh, 0x0F
 	mov bl, al
@@ -70,8 +84,7 @@ vga_putchar:
 
 	cmp bl, 0x0A
 	jne .print
-	inc byte [vga_y]
-	mov byte [vga_x], 0x00
+	call vga_scroll_down
 	jmp .end
 	.print:
 		mov cl, byte [vga_y]

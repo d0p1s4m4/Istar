@@ -25,18 +25,16 @@
 ; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 ; OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-org 0x8000
 bits 32
 
-jmp start
+global _start
+extern vga_init
+extern vga_putstr
 
-%include 'legacy/stage2/vga.s'
-
-msg_stage2: db "Istar: Hello stage2!", 0x0A, "~~~~~:) Make datalove (:~~~~", 0
-
-start:
+_start:
 	call vga_init
 	mov si, msg_stage2
 	call vga_putstr
 	hlt
+
+msg_stage2: db "Istar: Hello stage2!", 0x0A, "~~~~~:) Make datalove (:~~~~", 0

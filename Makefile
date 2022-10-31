@@ -7,6 +7,7 @@ RM	= rm -f
 COMMON_CFLAGS	= -ansi -pedantic -Werror -Wextra -Wall -Iinclude
 CFLAGS	= $(COMMON_CFLAGS)
 
+include common/build.mk
 include legacy/build.mk
 include cli/build.mk
 include efi/build.mk
@@ -41,7 +42,6 @@ run-efi: OVMF.fd BOOTX64.EFI
 	qemu-system-x86_64 -enable-kvm -serial stdio -bios OVMF.fd \
 						-drive file=fat:rw:./.test/,media=disk,format=raw
 	
-
 run: run-efi
 
 .PHONY: all clean re run-legacy run-efi-ia32 run-efi run
