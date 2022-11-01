@@ -21,6 +21,13 @@ For people wondering what Istar mean:
 Istar: (Quenya) proper name. Wizard, (lit.) One Who Knows
 ```
 
+# Building
+
+```
+$ guix shell
+$ make
+```
+
 # License
 
 <img src="https://opensource.org/files/OSI_Approved_License.png" align="right" height="128px" alt="OSI Approved License">
