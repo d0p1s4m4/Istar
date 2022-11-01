@@ -118,8 +118,8 @@ fs_file_size(EfiFileProtocol *fp)
 	return (info.file_size);
 }
 
-char *
-fs_readall(FILE *fp)
+int
+fs_readall(FILE *fp, char **buff, size_t *len)
 {
 	EfiFileProtocol *efi_fp;
 	uintn_t size;
@@ -131,16 +131,19 @@ fs_readall(FILE *fp)
 	content = memory_alloc(size + 1);
 	if (content == NULL)
 	{
-		return (NULL);
+		return (-1);
 	}
 
 	if (efi_fp->read(fp, &size, content) != EFI_SUCCESS)
 	{
 		memory_free(content);
-		return (NULL);
+		return (-1);
 	}
 	content[size] = '\0';
-	return (content);
+
+	*len = size;
+	*buff = content;
+	return (0);
 }
 
 void

@@ -31,6 +31,7 @@
 #include <istar/console.h>
 #include <istar/fs.h>
 #include <istar/memory.h>
+#include <istar/elf.h>
 #include <istar/efi.h>
 
 EfiStatus
@@ -38,6 +39,7 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 {
 	FILE *fp;
 	char *buff;
+	size_t size;
 
 	efi_initialize(handle, system_table);
 
@@ -59,7 +61,7 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 		console_printf("can't open istar.lisp\n");
 	}
 
-	if ((buff = fs_readall(fp)) == NULL)
+	if ((fs_readall(fp, &buff, &size)) < 0)
 	{
 		console_printf("can't read istar.lisp\n");
 	}
@@ -70,6 +72,26 @@ efi_main(EfiHandle handle, EfiSystemTable *system_table)
 	memory_free(buff);
 	fs_close(fp);
 
+	if ((fp = fs_open("EFI/BOOT/kernel.elf")) == NULL)
+	{
+		console_printf("can't open kernel.elf\n");
+	}
+	else
+	{
+		if ((fs_readall(fp, &buff, &size)) < 0)
+		{
+			console_printf("can't read kernel.elf\n");
+		}
+		else
+		{
+			if (elf_validate((uint8_t *)buff, size) < 0)
+			{
+				console_printf("kernel.elf is not valid\n");
+			}
+		}
+	}
+
 	while (1);
+
 	return (0);
 }

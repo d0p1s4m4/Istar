@@ -38,7 +38,7 @@
 
 int fs_initialize(void);
 FILE *fs_open(char *path);
-char *fs_readall(FILE *fp);
+int fs_readall(FILE *fp, char **buff, size_t *size);
 void fs_close(FILE *fp);
 
 #endif /* !ISTAR_FS_H */

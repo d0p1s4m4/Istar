@@ -34,5 +34,6 @@
 # include <istar/types.h>
 
 void *memset(void *str, int c, uintptr_t n);
+int strncmp(char const *s1, char const *s2, size_t n);
 
 #endif /* !ISTAR_STRING_H */

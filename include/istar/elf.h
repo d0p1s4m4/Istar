@@ -34,6 +34,18 @@
 
 # include <istar/types.h>
 
+# define ELF_MAGIC "\177ELF"
+
+enum e_machine {
+	MACH_X86 = 0x03,
+	MACH_AMD64 = 0x3E
+};
+
+enum ie_class {
+	CLASS_32 = 1,
+	CLASS_64 = 2
+};
+
 typedef struct {
 	uint8_t magic[4];
 	uint8_t class;
@@ -42,7 +54,7 @@ typedef struct {
 	uint8_t os_abi;
 	uint8_t abi_version;
 	uint8_t pad[7];
-} ElfIdent;
+} __attribute__((packed)) ElfIdent;
 
 typedef struct {
 	ElfIdent ident;
@@ -59,7 +71,7 @@ typedef struct {
 	uint16_t shentsize;
 	uint16_t shnum;
 	uint16_t shstrndx;
-} Elf32Header;
+} __attribute__((packed)) Elf32Header;
 
 typedef struct {
 	uint32_t type;
@@ -70,7 +82,7 @@ typedef struct {
 	uint32_t memsz;
 	uint32_t flags;
 	uint32_t align;
-} Elf32ProgramHeader;
+} __attribute__((packed)) Elf32ProgramHeader;
 
 typedef struct {
 	uint32_t name;
@@ -83,7 +95,7 @@ typedef struct {
 	uint32_t info;
 	uint32_t addralign;
 	uint32_t entsize;
-} Elf32SectionHeader;
+} __attribute__((packed)) Elf32SectionHeader;
 
 typedef struct {
 	ElfIdent ident;
@@ -100,7 +112,7 @@ typedef struct {
 	uint16_t shentsize;
 	uint16_t shnum;
 	uint16_t shstrndx;
-} Elf64Header;
+} __attribute__((packed)) Elf64Header;
 
 typedef struct {
 	uint32_t type;
@@ -111,7 +123,7 @@ typedef struct {
 	uint64_t filesz;
 	uint64_t memsz;
 	uint64_t align;
-} Elf64ProgramHeader;
+} __attribute__((packed)) Elf64ProgramHeader;
 
 typedef struct {
 	uint32_t name;
@@ -124,6 +136,8 @@ typedef struct {
 	uint32_t info;
 	uint64_t addralign;
 	uint64_t entsize;
-} Elf64SectionHeader;
+} __attribute__((packed)) Elf64SectionHeader;
+
+int elf_validate(uint8_t *buffer, size_t size);
 
 #endif /* !ISTAR_ELF_H */

@@ -1,1 +1,1 @@
-COMMON_SRCS	= string/memset.c console.c
+COMMON_SRCS	= string/memset.c string/strncmp.c console.c elf.c
