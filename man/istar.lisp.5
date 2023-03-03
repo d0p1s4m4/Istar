@@ -1,0 +1,32 @@
+.TH ISTAR\&.LISP 5 2023-03-03
+
+.SH NAME
+istar.lisp \- Istar (bootloader) configuration file
+
+.SH SYNOPSIS
+/boot/istar\&.lisp, /EFI/istar\&.lisp, /EFI/BOOT/istar\&.lisp 
+
+.SH DESCRIPTION
+An example:
+.RS 4
+.nf
+(define boot-entries
+        #(((title . "FreeDOS")
+           (chainload . "fdboot.img"))))
+
+(istar #:timeout 0
+       #:entries boot-entries)
+
+.fi
+.RE
+
+.SH COPYRIGHT
+Copyright \(co 2023 d0p1.
+.br
+License BSD 3 Clause: <https://opensource.org/license/bsd-3-clause/>.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+.SH SEE ALSO
+.BR istar-cli (8)

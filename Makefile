@@ -4,9 +4,12 @@ CC	?= clang
 LD	?= ld
 RM	= rm -f
 
+PREFIX ?= /usr/local
+
 COMMON_CFLAGS	= -ansi -pedantic -Werror -Wextra -Wall -Iinclude -Wno-long-long
 CFLAGS	= $(COMMON_CFLAGS)
 
+include man/build.mk
 include common/build.mk
 include legacy/build.mk
 include cli/build.mk
@@ -43,5 +46,9 @@ run-efi: OVMF.fd BOOTX64.EFI
 						-drive file=fat:rw:./.test/,media=disk,format=raw
 	
 run: run-efi
+
+install: istar-cli install-man
+	install -d $(DESTDIR)$(PREFIX)/sbin/
+	install istar-cli $(DESTDIR)$(PREFIX)/sbin/
 
 .PHONY: all clean re run-legacy run-efi-ia32 run-efi run
